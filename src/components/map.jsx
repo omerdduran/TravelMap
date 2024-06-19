@@ -1,0 +1,38 @@
+import * as maptilersdk from '@maptiler/sdk';
+import "@maptiler/sdk/dist/maptiler-sdk.css";
+import './css/map.css';
+import {useEffect, useRef, useState} from "react";
+import places from '../places.jsx'
+
+export default function Map() {
+    const mapContainer = useRef(null);
+    const map = useRef(null);
+    const ist = { lng: 28.974969, lat: 41.086325 };
+    const [zoom] = useState(3);
+    maptilersdk.config.apiKey = 'LVUKYURnAzIT8WW4OoJ9';
+
+    useEffect(() => {
+        if (map.current) return; // stops map from intializing more than once
+
+        map.current = new maptilersdk.Map({
+            container: mapContainer.current,
+            style: maptilersdk.MapStyle.STREETS,
+            center: [ist.lng, ist.lat],
+            zoom: zoom
+        });
+
+        places.map(place => {
+            const latitude = parseFloat(place.latitude);
+            const longitude = parseFloat(place.longtitude);
+            new maptilersdk.Marker({ color: "#FF0000" })
+                .setLngLat([longitude, latitude])
+                .addTo(map.current);
+        });
+    }, [ist.lng, ist.lat, zoom]);
+
+    return (
+        <div className="map-wrap">
+            <div ref={mapContainer} className="map" />
+        </div>
+    );
+}
